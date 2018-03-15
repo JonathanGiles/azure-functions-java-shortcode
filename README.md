@@ -1,15 +1,17 @@
-# azure-functions-java-shortcode
-A small application that can generate / persist / lookup short codes for a given URL.
+# Azure Functions & Java URL Shortener
+A small Azure Function project that can generate / persist / lookup short codes for a given URL.
 
 Provides two functions that can be called:
 
 **shortcode**
 
-Accepted as a POST call, expects a `url` query string representing the URL to be turned into a shortcode. Returns status code 200 when successful, with the body being the full short url, e.g. http://jogil.es/20490
+Accepted as a POST call, expects a `url` query string representing the URL to be turned into a shortcode. Returns status code 200 when successful, with the body being the full short url, e.g. http://jogil.es/7a
+
+An optional `shortcode` query string may also be supplied, to suggest a preferred shortcode.
 
 **redirect**
 
-Accepted as a GET call, expects a `name` query string representing the short code to be turned into the (previously stored) long url. Returns status code 302 with a `Location` response header pointing to the long url.
+Accepted as a GET call, expects a `shortcode` query string representing the short code to be turned into the (previously stored) long url. Returns status code 302 with a `Location` response header pointing to the long url.
 
 ## What are Azure Functions?
 Azure Functions is the name for the 'serverless' offering on the Azure cloud service. There are APIs for many languages, but this test application makes use of the Java APIs. Here are some handy link:

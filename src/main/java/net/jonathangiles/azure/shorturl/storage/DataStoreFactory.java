@@ -1,7 +1,6 @@
-package net.jonathangiles.azure.shorturl.db;
+package net.jonathangiles.azure.shorturl.storage;
 
-import net.jonathangiles.azure.shorturl.db.impls.JPADatabase;
-import net.jonathangiles.azure.shorturl.db.impls.SQLDatabase;
+import net.jonathangiles.azure.shorturl.storage.azure.AzureTableStore;
 
 /**
  * Factory that returns the relevant instance of a {@link DataStore} that can be used to persist short code mappings.
@@ -16,8 +15,7 @@ public class DataStoreFactory {
      */
     public static DataStore getInstance() {
         if (dataStore == null) {
-//            dataStore = new SQLDatabase();
-            dataStore = new JPADatabase();
+            dataStore = new AzureTableStore();
         }
 
         return dataStore;

@@ -9,68 +9,38 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>Azure Java Functions</name>
+    <name>URL Shortener</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <functionAppName>jgilesshorturl-20180101133839850</functionAppName>
+        <functionAppName>jogiles-short-url</functionAppName>
         <functionAppRegion>westus</functionAppRegion>
     </properties>
 
     <dependencies>
+        <!-- Bring in Azure Functions so that we can write our functions and deploy to Azure -->
         <dependency>
             <groupId>com.microsoft.azure</groupId>
             <artifactId>azure-functions-java-core</artifactId>
             <version>1.0.0-beta-2</version>
         </dependency>
 
-        <!--JPA for database persistency-->
+        <!-- Bring in Azure Storage to access table and file shares -->
         <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.jpa</artifactId>
-            <version>2.7.1</version>
+            <groupId>com.microsoft.azure</groupId>
+            <artifactId>azure-storage</artifactId>
+            <version>7.0.0</version>
         </dependency>
 
-        <!-- Derby for local database testing of JPA -->
+        <!-- Bring in Azure Application Insights for real-time telemetry -->
         <dependency>
-            <groupId>org.apache.derby</groupId>
-            <artifactId>derby</artifactId>
-            <version>10.14.1.0</version>
+            <groupId>com.microsoft.azure</groupId>
+            <artifactId>applicationinsights-web</artifactId>
+            <version>[2.0,)</version>
         </dependency>
 
-        <!-- SQL Server for remote database connection in JPA -->
-        <!--<dependency>-->
-            <!--<groupId>com.microsoft.sqlserver</groupId>-->
-            <!--<artifactId>mssql-jdbc</artifactId>-->
-            <!--<version>6.2.2.jre8</version>-->
-            <!--<type>jar</type>-->
-            <!--<scope>runtime</scope>-->
-        <!--</dependency>-->
-
-        <!-- Lombok to reduce verbosity -->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.16.18</version>
-            <scope>provided</scope>
-        </dependency>
-
-
-        <!-- Test -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <version>2.4.0</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>
@@ -83,7 +53,7 @@
                 <plugin>
                     <groupId>com.microsoft.azure</groupId>
                     <artifactId>azure-functions-maven-plugin</artifactId>
-                    <version>0.1.9</version>
+                    <version>0.1.10</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -117,7 +87,7 @@
                 <groupId>com.microsoft.azure</groupId>
                 <artifactId>azure-functions-maven-plugin</artifactId>
                 <configuration>
-                    <resourceGroup>java-functions-group</resourceGroup>
+                    <resourceGroup>shortcode-app</resourceGroup>
                     <appName>${functionAppName}</appName>
                     <region>${functionAppRegion}</region>
                     <appSettings>
@@ -155,6 +125,12 @@
                                     <includes>
                                         <include>host.json</include>
                                         <include>local.settings.json</include>
+                                    </includes>
+                                </resource>
+                                <resource>
+                                    <directory>${project.basedir}/src/main/resources</directory>
+                                    <includes>
+                                        <include>www/**</include>
                                     </includes>
                                 </resource>
                             </resources>
