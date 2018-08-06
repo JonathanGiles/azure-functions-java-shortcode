@@ -28,3 +28,5 @@ hs_err_pid*
 .classpath
 persistence-production.xml
 dependency-reduced-pom.xml
+local.settings.json
+obj

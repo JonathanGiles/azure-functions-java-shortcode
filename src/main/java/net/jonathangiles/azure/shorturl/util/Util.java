@@ -2,7 +2,7 @@ package net.jonathangiles.azure.shorturl.util;
 
 import com.microsoft.applicationinsights.TelemetryClient;
 import com.microsoft.applicationinsights.telemetry.Duration;
-import com.microsoft.azure.serverless.functions.HttpRequestMessage;
+import com.microsoft.azure.functions.HttpRequestMessage;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -17,20 +17,22 @@ import java.util.function.Supplier;
  */
 public class Util {
     /**
-     * Because we have a separate v1 proxy app, we configure that proxy to forward the host in a jg-host header
+     * Because we have a separate v1 proxy app, we configure that proxy to forward the host and referrer in a jg-* header
      * to the actual v2 function app. This allows for us to determine if the request came in through jogil.es, java.ms, etc
      */
     public static final String HEADER_JG_HOST = "jg-host";
+    public static final String HEADER_JG_REFERRER = "jg-referrer";
+
+    public static final String PROCESSING_QUEUE_NAME = "processingQueue";
+    public static final String PROCESSING_QUEUE_QUEUE_NAME = "urlclicks";
 
     // We don't want robots coming to our shortcode app, so we block them
-    public static final String ROBOTS_TXT = "robots.txt";
+    public static final String REJECT_SHORTCODE_ROBOTS_TXT = "robots.txt";
     public static final String ROBOTS_RESPONSE = "user-agent: *\ndisallow: /";
 
-    // A few useful HTTP status codes
-    public static final int HTTP_STATUS_OK = 200;
-    public static final int HTTP_STATUS_REDIRECT = 302;
-    public static final int HTTP_STATUS_NOT_FOUND = 404;
-    public static final int HTTP_STATUS_CONFLICT = 409;
+    // We get a lot of requests for a shortcode of 'wp-login.php', that is, people assuming the server is running
+    // wordpress and trying to hack it
+    public static final String REJECT_SHORTCODE_WP_LOGIN = "wp-login.php";
 
     // So that we can get some insights logged into Azure Application Insights, we create a telemetry client here
     // and configure it with the instrumentation key
@@ -57,6 +59,7 @@ public class Util {
             if (!isMicrosoftUrl) return urlString;
 
             String tracking = getHost(request).getTrackingCode();
+
             return urlString.contains("?") ? (url + "&" + tracking) : (url + "?" + tracking);
         } catch (MalformedURLException e) {
             return urlString;
@@ -89,7 +92,7 @@ public class Util {
         StringBuilder key = new StringBuilder();
         Random random = new Random();
 
-        for (int i = 1; i <= length; i++) {
+        for (int i = 0; i < length; i++) {
             int type = random.nextInt(3);
             switch (type) {
                 case 0: key.append((char)(random.nextInt(10) + 48)); break; // 0-9

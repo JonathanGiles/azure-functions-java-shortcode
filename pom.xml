@@ -22,9 +22,9 @@
     <dependencies>
         <!-- Bring in Azure Functions so that we can write our functions and deploy to Azure -->
         <dependency>
-            <groupId>com.microsoft.azure</groupId>
-            <artifactId>azure-functions-java-core</artifactId>
-            <version>1.0.0-beta-2</version>
+            <groupId>com.microsoft.azure.functions</groupId>
+            <artifactId>azure-functions-java-library</artifactId>
+            <version>1.0.0-beta-5</version>
         </dependency>
 
         <!-- Bring in Azure Storage to access table and file shares -->
@@ -41,6 +41,17 @@
             <version>[2.0,)</version>
         </dependency>
 
+        <!-- Feign to communicate with Slack easily -->
+        <dependency>
+            <groupId>io.github.openfeign</groupId>
+            <artifactId>feign-core</artifactId>
+            <version>9.6.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.openfeign</groupId>
+            <artifactId>feign-jackson</artifactId>
+            <version>9.6.0</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -53,7 +64,7 @@
                 <plugin>
                     <groupId>com.microsoft.azure</groupId>
                     <artifactId>azure-functions-maven-plugin</artifactId>
-                    <version>0.1.10</version>
+                    <version>1.0.0-beta-4</version>
                 </plugin>
             </plugins>
         </pluginManagement>

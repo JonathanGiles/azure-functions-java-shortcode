@@ -1,12 +1,9 @@
 package net.jonathangiles.azure.shorturl.functions;
 
-import com.microsoft.azure.serverless.functions.ExecutionContext;
-import com.microsoft.azure.serverless.functions.HttpRequestMessage;
-import com.microsoft.azure.serverless.functions.HttpResponseMessage;
-import com.microsoft.azure.serverless.functions.annotation.AuthorizationLevel;
-import com.microsoft.azure.serverless.functions.annotation.FunctionName;
-import com.microsoft.azure.serverless.functions.annotation.HttpTrigger;
-import net.jonathangiles.azure.shorturl.util.Util;
+import com.microsoft.azure.functions.*;
+import com.microsoft.azure.functions.annotation.AuthorizationLevel;
+import com.microsoft.azure.functions.annotation.FunctionName;
+import com.microsoft.azure.functions.annotation.HttpTrigger;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -21,8 +18,8 @@ import java.util.Optional;
 public class FrontendFunction {
 
     @FunctionName("frontend")
-    public HttpResponseMessage<String> frontend(
-            @HttpTrigger(name = "req", methods = {"get"}, authLevel = AuthorizationLevel.ANONYMOUS) HttpRequestMessage<Optional<String>> request,
+    public HttpResponseMessage frontend(
+            @HttpTrigger(name = "req", methods = {HttpMethod.GET}, authLevel = AuthorizationLevel.ANONYMOUS) HttpRequestMessage<Optional<String>> request,
             final ExecutionContext context) {
 
         context.getLogger().info("Admin url requested");
@@ -35,7 +32,7 @@ public class FrontendFunction {
 
         if (!Files.exists(path)) {
             context.getLogger().info("Cannot find frontend files at path " + path);
-            return request.createResponse(Util.HTTP_STATUS_NOT_FOUND, "Cannot find frontend files at path " + path);
+            return request.createResponseBuilder(HttpStatus.NOT_FOUND).body("Cannot find frontend files at path " + path).build();
         }
 
         try {
@@ -43,12 +40,15 @@ public class FrontendFunction {
 
             context.getLogger().info("Html follows: \n" + html);
 
-            HttpResponseMessage<String> response = request.createResponse(200, html);
-            response.addHeader("Content-Type", "text/html");
-            return response;
+            return request.createResponseBuilder(HttpStatus.OK)
+                    .header("Content-Type", "text/html")
+                    .body(html)
+                    .build();
         } catch (IOException e) {
             context.getLogger().info("Cannot read html from file at path " + path);
-            return request.createResponse(Util.HTTP_STATUS_NOT_FOUND, "Cannot read html from file at path " + path);
+            return request.createResponseBuilder(HttpStatus.NOT_FOUND)
+                    .body("Cannot read html from file at path " + path)
+                    .build();
         }
     }
 }
